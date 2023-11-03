@@ -1,6 +1,6 @@
 use std::collections::HashMap;
+use std::env;
 use std::fs;
-use std::path::Path;
 use text_io::read;
 
 struct Interpreter {
@@ -91,7 +91,7 @@ impl Interpreter {
                     pos += 1;
                 }
                 '+' => {
-                    self.tape.get();
+                    self.tape.inc();
                     pos += 1;
                 }
                 '-' => {
@@ -108,11 +108,10 @@ impl Interpreter {
                     pos += 1;
                 }
                 '[' => {
-                    if self.tape.get() != 0 {
-                        self.tape.inc();
-                        pos += 1;
-                    } else {
+                    if self.tape.get() == 0 {
                         pos = bracket_ptr[&pos] + 1;
+                    } else {
+                        pos += 1;
                     }
                 }
                 ']' => {
@@ -127,7 +126,9 @@ impl Interpreter {
 }
 
 fn main() {
-    let path = Path::new("file.b");
+    let args: Vec<String> = env::args().collect();
+
+    let path = &args[1];
 
     let contents = fs::read_to_string(path).expect("Should have been able to read the file");
 
